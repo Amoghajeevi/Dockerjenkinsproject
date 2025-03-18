@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_HUB_REPO = 'yourusername/docker-jenkins-app'
+        DOCKER_HUB_REPO = 'yourusername/Dockerjenkinsproject'
     }
     stages {
         stage('Checkout') {
