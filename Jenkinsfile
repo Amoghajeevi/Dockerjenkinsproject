@@ -1,7 +1,10 @@
 pipeline {
     agent any
     environment {
+HEAD
         DOCKER_HUB_REPO = 'amoghajeevi/dockerjenkinsproject'
+        DOCKER_HUB_REPO = 'yourusername/dockerjenkinsproject
+	 cb219e7 (initial app commit)
     }
     stages {
         stage('Checkout') {
