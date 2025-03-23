@@ -1,19 +1,17 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.8-slim'
-        }
-    }
+    agent any
+
     environment {
         DOCKER_IMAGE = 'amoghajeevi/dockerjenkinsproject:latest'
-        DOCKER_CREDENTIALS = 'dockerhub'
     }
+
     stages {
         stage('Clone Repository') {
             steps {
                 git 'https://github.com/Amoghajeevi/Dockerjenkinsproject.git'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -21,17 +19,22 @@ pipeline {
                 }
             }
         }
+
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: 'https://index.docker.io/v1/']) {
+                script {
+                    sh 'docker login -u <your-dockerhub-username> -p <your-password>'
                     sh 'docker push $DOCKER_IMAGE'
                 }
             }
         }
-        stage('Deploy Container') {
+
+        stage('Run Docker Container') {
             steps {
-                sh 'docker stop dockerjenkinsproject || true && docker rm dockerjenkinsproject || true'
-                sh 'docker run -d -p 3000:3000 --name dockerjenkinsproject $DOCKER_IMAGE'
+                script {
+                    sh 'docker stop dockerjenkinsproject || true && docker rm dockerjenkinsproject || true'
+                    sh 'docker run -d -p 3000:3000 --name dockerjenkinsproject $DOCKER_IMAGE'
+                }
             }
         }
     }
