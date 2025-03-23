@@ -1,14 +1,18 @@
-# Base image
-FROM ubuntu:latest
+# Use Node.js as the base image
+FROM node:14
 
-# Install dependencies
-RUN apt update && apt install -y nginx
+# Create and set working directory
+WORKDIR /usr/src/app
 
-# Copy application files
-COPY index.html /var/www/html/
+# Copy package.json and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy application code
+COPY . .
 
 # Expose port
-EXPOSE 80
+EXPOSE 3000
 
-# Start nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Run the application
+CMD ["node", "app.js"]
