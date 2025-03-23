@@ -1,32 +1,37 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.8-slim'
+        }
+    }
     environment {
-HEAD
-        DOCKER_HUB_REPO = 'amoghajeevi/dockerjenkinsproject'
-        DOCKER_HUB_REPO = 'yourusername/dockerjenkinsproject
-	 cb219e7 (initial app commit)
+        DOCKER_IMAGE = 'amoghajeevi/dockerjenkinsproject:latest'
+        DOCKER_CREDENTIALS = 'dockerhub'
     }
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Amoghajeevi/Dockerjenkinsproject.git'
+                git 'https://github.com/Amoghajeevi/Dockerjenkinsproject.git'
             }
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_HUB_REPO:latest .'
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
             }
         }
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                    sh 'docker push $DOCKER_HUB_REPO:latest'
+                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: 'https://index.docker.io/v1/']) {
+                    sh 'docker push $DOCKER_IMAGE'
                 }
             }
         }
         stage('Deploy Container') {
             steps {
-                sh 'docker run -d --name jenkins-app -p 4000:4000 $DOCKER_HUB_REPO:latest'
+                sh 'docker stop dockerjenkinsproject || true && docker rm dockerjenkinsproject || true'
+                sh 'docker run -d -p 3000:3000 --name dockerjenkinsproject $DOCKER_IMAGE'
             }
         }
     }
