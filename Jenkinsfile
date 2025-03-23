@@ -23,8 +23,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh 'docker login -u <your-dockerhub-username> -p <your-password>'
-                    sh 'docker push $DOCKER_IMAGE'
+                    sh 'docker login -u amoghajeevi -p 1amHarsha!'
+                    sh 'docker push amoghajeevi/dockerjenkinsproject:latest'
                 }
             }
         }
